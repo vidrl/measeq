@@ -23,6 +23,8 @@ include { CUSTOM_MAKE_DEPTH_MASK    } from '../../../modules/local/artic/subcomm
 include { BCFTOOLS_CONSENSUS as BCFTOOLS_CONSENSUS_AMBIGUOUS } from '../../../modules/nf-core/bcftools/consensus/main'
 include { BCFTOOLS_CONSENSUS as BCFTOOLS_CONSENSUS_FINAL     } from '../../../modules/nf-core/bcftools/consensus/main'
 include { ADJUST_FASTA_HEADER       } from '../../../modules/local/artic/subcommands/main'
+// new add Tag handle for dedup
+include { TAG_HANDLE                } from '../../../modules/local/tag_handle/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -174,10 +176,18 @@ workflow ILLUMINA_CONSENSUS {
 
     if( params.remove_duplicates ) {
         // Run Subworkflow
+
+        // Add a bam file handle here
+        TAG_HANDLE(
+            ch_bam_input.bam
+        )
+
         BAM_MARKDUPLICATES_PICARD(
-            ch_bam_input.bam,
+            //ch_bam_input.bam,
+            TAG_HANDLE.out.bam,
             ch_bam_input.reference,
-            ch_bam_input.fai
+            TAG_HANDLE.out.bai
+            //ch_bam_input.fai
         )
         ch_bam_bai = BAM_MARKDUPLICATES_PICARD.out.bam
                         .join(BAM_MARKDUPLICATES_PICARD.out.bai, by: [0])

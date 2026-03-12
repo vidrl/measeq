@@ -1,0 +1,7 @@
+name: tag_handle_samtools
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - bioconda::samtools=1.23
+  - bioconda::picard=3.1.1
