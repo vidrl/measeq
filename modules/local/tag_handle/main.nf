@@ -19,7 +19,7 @@ process TAG_HANDLE {
     script:
     """
     samtools view -h ${bam} \
-    | mawk 'BEGIN{FS=OFS="\t"} /^@/{print;next} {split(\$1,n,":"); $0=$0"\tRX:Z:"n[length(n)]; print}' \
+    | mawk 'BEGIN{FS=OFS="\t"} /^@/{print;next} {split(\$1,n,":"); \$0=\$0"\tRX:Z:"n[length(n)]; print}' \
     | sed s/_/-/g \
     | samtools view -bS - > ${meta.id}.tag.bam
 
