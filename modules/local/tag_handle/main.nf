@@ -4,8 +4,8 @@ process TAG_HANDLE {
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/artic:1.8.5--pyhdfd78af_0' :
-        'biocontainers/artic:1.8.5--pyhdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/samtools:1.21--h50ea8bc_0' :
+        'biocontainers/samtools:1.21--h50ea8bc_0' }"
 
     input:
     tuple val(meta), path(bam)
@@ -21,16 +21,7 @@ process TAG_HANDLE {
     samtools view -h ${bam} \
     | awk 'BEGIN{FS=OFS="\t"} /^@/{print;next} {split(\$1,n,":"); \$0=\$0"\tRX:Z:"n[length(n)]; print}' \
     | sed s/_/-/g \
-    | samtools view -bS - > ${meta.id}.tag.bam
-
-    picard AddOrReplaceReadGroups \
-    -I ${meta.id}.tag.bam \
-    -O ${meta.id}.correct.bam \
-    --RGID 1 \
-    --RGLB library1 \
-    --RGPL ILLUMINA \
-    --RGPU unit1 \
-    --SM sample1
+    | samtools view -bS - > ${meta.id}.correct.bam
 
     samtools index ${meta.id}.correct.bam
 
